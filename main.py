@@ -10,21 +10,21 @@ sia = SentimentIntensityAnalyzer()
 def parse_cli(argv):
 
     # Define default options
-    options = {'replace': False, 'long': False, 'input_file': None,
+    options = {'replace': False, 'details': False, 'latex': False, 'input_file': None,
                'output_file': None, 'column_name': None}
 
     # Parse submitted options
     try:
-        opts, args = getopt.getopt(argv, "rli:o:c:")
+        opts, args = getopt.getopt(argv, "dli:o:c:")
     except getopt.GetoptError as e:
         print(e.msg)
         print("how to use")  # FIXME
         sys.exit(2)
     for opt, arg in opts:
-        if opt == "-r":
-            options['replace'] = True
+        if opt == "-d":
+            options['details'] = True
         elif opt == "-l":
-            options['long'] = True
+            options['latex'] = True
         elif opt == "-i":
             options['input_file'] = arg
         elif opt == "-o":
@@ -78,7 +78,7 @@ def get_sentiment(response: str) -> bool:
         return "Positive", score
 
 
-def print_long(arr):
+def print_details(arr):
     for [value, score] in arr:
         print(value + " (Score: " + str(score) + ") \n")
 
@@ -105,14 +105,16 @@ def main(argv):
     pos_per = '{:.2f}'.format(count["Positive"]/total*100)
     print("Total: " + str(total))
     print("Negative: " + str(count["Negative"]) + " (" + neg_per + "%)")
-    if options["long"]:
-        print_long(sorted_sentiments["Negative"])
+    if options["details"]:
+        print_details(sorted_sentiments["Negative"])
     print("Neutral: " + str(count["Neutral"]) + " (" + neut_per + "%)")
-    if options["long"]:
-        print_long(sorted_sentiments["Neutral"])
+    if options["details"]:
+        print_details(sorted_sentiments["Neutral"])
     print("Positive: " + str(count["Positive"]) + " (" + pos_per + "%)")
-    if options["long"]:
-        print_long(sorted_sentiments["Positive"])
+    if options["details"]:
+        print_details(sorted_sentiments["Positive"])
+    if options["latex"]:
+        print(options["column_name"] + " & " + str(count["Negative"]) + " (" + neg_per + "\%)" + " & " + str(count["Neutral"]) + " (" + neut_per + "\%)" + " & " + str(count["Positive"]) + " (" + pos_per + "\%)" + " & " + str(total) + " \\\\" )
 
 
 if __name__ == "__main__":
